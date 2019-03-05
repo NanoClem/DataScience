@@ -37,17 +37,58 @@ api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, 
 
 #file = open("tweets.txt",'w')
 
-for status in tweepy.Cursor(api.home_timeline).items(200):
+U=[]
+Tweet=[]
+
+for status in tweepy.Cursor(api.home_timeline).items(4):
 #    json.dump(status._json,file)  #ecrire le tweet dans le fichier
 #    file.write("\n\n")
-    print("Tweet :\n", status._json.get("text"),"\n\n")
-    print("Details du tweet :\n",status._json,"\n\n")
-    print("Infos de l'utilisateur :\n",status._json.get("user"))
-    print("\n\nNom de l'utilisateur :\n",status._json.get("user").get("name"),",  ", status._json.get("user").get("screen_name"),"\n\n\n")
 
+#    print("Details du tweet :\n",status._json,"\n\n")
+#    print("Infos de l'utilisateur :\n",status._json.get("user"))
+#    print("\n\n\nNom de l'utilisateur :\n",status._json.get("user").get("name"),",  ", status._json.get("user").get("screen_name"))
+#    print("\nTweet :\n", status._json.get("text"))
+#    print("\nPlace", status._json.get("place"))
+#    
+    
+    d={}
+    d["idUser"]=status._json.get("user").get("id")
+    d["pseudo"]=status._json.get("user").get("screen_name")
+    d["location"]=status._json.get("user").get("location")
+    d["followers"]=status._json.get("user").get("followers_count")
+    d["time_zone"]=status._json.get("user").get("time_zone")
+    U.append(d)
+    
+    t={}
+    t["idTweet"]=status._json.get("id")
+    t["created_date"]=status._json.get("created_at")
+    t["content"]=status._json.get("text")
+    t["hashtags"]=status._json.get("entities").get("hashtags")
+    t["geo"]=status._json.get("geo")
+    t["coords"]=status._json.get("coordinates")
+    t["place"]=status._json.get("place")
+    t["lang"]=status._json.get("lang")
+    Tweet.append(t)
+
+
+def delDoublons(L):
+    A=[]
+    for i in L:
+        if i not in A:
+            A.append(i)
+    return A
+   
+User=delDoublons(U)   
+    
 #file.close()
 
 
+
+
+
+# =============================================================================
+# 
+# =============================================================================
 class StreamListener(tweepy.StreamListener):
 
     def on_status(self, status):
