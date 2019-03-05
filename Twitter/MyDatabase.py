@@ -82,6 +82,7 @@ class MyDatabase :
 
         print("CREATE TABLE %s (%s)" %(tableName,sql))
         mycursor.execute("CREATE TABLE %s (%s)" %(tableName,sql))
+        print("Successfuly created table %s" %tableName)
 
 
 
