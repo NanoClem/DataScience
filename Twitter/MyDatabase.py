@@ -3,6 +3,8 @@ import mysql.connector as mysql
 
 class MyDatabase :
     """
+    Cette classe représente un DOM mysql en python de manière a
+    pouvoir effectuer les traitements de base sur une BDD
     """
 
     def __init__(self, _host = "localhost", _user="root", _password="root", _port="3306") :
@@ -34,6 +36,28 @@ class MyDatabase :
 
 
 
+    def exists(self, DBname) :
+        """
+        Permet de savoir si une base de donnee existe
+        grace au nom passe en parametre
+        PARAM DBname : nom de la BDD que l'on cherche
+        RETURN : vrai si elle exite, faux sinon
+        RETURN TYPE : boolean
+        """
+        ret = True
+        mycursor = self.mydb.cursor()
+        mycursor.execute("SHOW DATABASES")
+
+        databases = mycursor.fetchall()         # liste de toutes les bdd existantes
+        for db in databases :
+            if db[0] == DBname :
+                ret = False
+                break
+
+        return ret
+
+
+
     def connectToDB(self, DBname) :
         """
         Connexion a la base de donnee
@@ -47,6 +71,7 @@ class MyDatabase :
             passwd = self.password,
             database = DBname
         )
+        print("Successfuly connected to database %s" %DBname)
 
 
 
@@ -57,8 +82,7 @@ class MyDatabase :
         PARAM DBname : nom de la bdd a creer
         """
         mycursor = self.mydb.cursor()
-        mycursor.execute("SHOW DATABASES ")
-        if DBname in mycursor :
+        if not self.exists(DBname) :
             print("ERROR : Database already existing")
         else :
             mycursor.execute("CREATE DATABASE " + DBname)
@@ -88,22 +112,21 @@ class MyDatabase :
 
     def insert(self, tableName, toInsert = {}) :
         """
-        Insertion de donnees dans la table
-        passee en parametre
+        Insertion d'une ligne dans la table
         PARAM tableName : nom de la table
         PARAM toInsert : description des donnees a inserer
         """
         mycursor = self.mydb.cursor()
-        columns = val = ""
+        val     = ()
+        columns = ""
         for key,value in toInsert.items() :
             columns += key
-            val     += str(value)
-            if key != list(toInsert.keys())[-1] :
+            val     += (str(value),)
+            if key != list(toInsert.keys())[-1] :   # si on est pos en fin de liste
                 columns += ", "
-                val     += ", "
 
-        sql = "INSERT INTO %s (%s) VALUES(%s)" %(tableName, columns, val)
-        print(sql)
-        mycursor.execute(sql)
+        query = "INSERT INTO " + tableName + "(" + columns + ")" + " VALUES(%s, %s, %s)"   # attention : pas generique
+        print(query, val)
+        mycursor.execute(query, val)
         self.mydb.commit()
         print(mycursor.rowcount, "record inserted")
