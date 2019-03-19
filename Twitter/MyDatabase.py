@@ -44,14 +44,14 @@ class MyDatabase :
         RETURN : vrai si elle exite, faux sinon
         RETURN TYPE : boolean
         """
-        ret = True
+        ret = False
         mycursor = self.mydb.cursor()
         mycursor.execute("SHOW DATABASES")
 
         databases = mycursor.fetchall()         # liste de toutes les bdd existantes
         for db in databases :
             if db[0] == DBname :
-                ret = False
+                ret = True
                 break
 
         return ret
@@ -82,7 +82,7 @@ class MyDatabase :
         PARAM DBname : nom de la bdd a creer
         """
         mycursor = self.mydb.cursor()
-        if not self.exists(DBname) :
+        if self.exists(DBname) :
             print("ERROR : Database already existing")
         else :
             mycursor.execute("CREATE DATABASE " + DBname)
@@ -98,14 +98,14 @@ class MyDatabase :
         PARAM cols : informations sur les colonnes de la table (nom/type)
         """
         mycursor = self.mydb.cursor()
-        sql  = ""
+        query  = ""
         for key,value in cols.items() :
-            sql += key + " " + str(value)
+            query += key + " " + str(value)
             if key != list(cols.keys())[-1] :     #derniere colonne du dicionnaire
-                sql += ", "
+                query += ", "
 
-        print("CREATE TABLE %s (%s)" %(tableName,sql))
-        mycursor.execute("CREATE TABLE %s (%s)" %(tableName,sql))
+        print("CREATE TABLE %s (%s)" %(tableName,query))
+        mycursor.execute("CREATE TABLE %s (%s)" %(tableName,query))
         print("Successfuly created table %s" %tableName)
 
 
@@ -117,15 +117,18 @@ class MyDatabase :
         PARAM toInsert : description des donnees a inserer
         """
         mycursor = self.mydb.cursor()
-        val     = ()
-        columns = ""
+        val     = ()                            # valeurs a inserer
+        STRval  = ""                            # mise en forme str de la patie "VALUES" de la requete
+        columns = ""                            # colonnes concernees par l'insertion
         for key,value in toInsert.items() :
             columns += key
             val     += (str(value),)
+            STRval  += "%s"
             if key != list(toInsert.keys())[-1] :   # si on est pos en fin de liste
                 columns += ", "
+                STRval  += ", "
 
-        query = "INSERT INTO " + tableName + "(" + columns + ")" + " VALUES(%s, %s, %s)"   # attention : pas generique
+        query = "INSERT INTO " + tableName + "(" + columns + ")" + " VALUES(" + STRval + ")"   # attention : pas generique
         print(query, val)
         mycursor.execute(query, val)
         self.mydb.commit()
