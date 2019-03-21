@@ -57,7 +57,7 @@ def main() :
     #OPERATION SUR LA BDD
     # db.createTable("user", user)
     # db.createTable("tweet", tweet)
-    # db.insert("user", toInsert)
+    db.insert("user", toInsert)
     db.insertMultiple("tweet", userTweets)
 
 
