@@ -3,15 +3,17 @@ from MyDatabase import MyDatabase
 
 
 def main() :
-    #INFORMATIONS SUR LA BDD
-    TwiDatabase = "twitterdatabase"
-    user = {                                        #description des colonnes
+    #====================================================
+    #   MISE EN PLACE DE LA BDD
+    #====================================================
+    TwiDatabase = "twitterdatabase"                     # nom de la BDD
+    user = {                                            # table "user"
         "idUser"    : "VARCHAR(50) PRIMARY KEY",
         "pseudo"    : "VARCHAR(50)",
         "location"  : "VARCHAR(30)",
         "time_zone" : "VARCHAR(30)"
     }
-    tweet = {
+    tweet = {                                           # table "tweet"
         "idTweet"      : "VARCHAR(50) PRIMARY KEY",
         "created_date" : "VARCHAR(30)",
         "content"      : "VARCHAR(280)",
@@ -22,13 +24,28 @@ def main() :
         "lang"         : "VARCHAR(20)"
     }
 
-    # DONNEES A INSERER
+    #====================================================
+    #   INSERTION SIMPLE DE DONNEES
+    #====================================================
     toInsert = {
         "idUser"   : 55545256,
         "pseudo"   : "Kikoo",
         "location" : "France"
     }
 
+    #====================================================
+    #   INSERTION MULTIPLE DE DONNEES
+    #====================================================
+    userTweets = [
+        {
+            "idTweet" : 4544547,
+            "content" : "koukou"
+        },
+        {
+            "idTweet" : 5632548,
+            "content" : "c moa"
+        }
+    ]
 
     db = MyDatabase()
 
@@ -40,7 +57,8 @@ def main() :
     #OPERATION SUR LA BDD
     # db.createTable("user", user)
     # db.createTable("tweet", tweet)
-    db.insert("User", toInsert)
+    # db.insert("user", toInsert)
+    db.insertMultiple("tweet", userTweets)
 
 
 
